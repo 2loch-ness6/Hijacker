@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity{
     static NotificationCompat.Builder notif, error_notif, handshake_notif;
     static NotificationManager mNotificationManager;
     static FragmentManager mFragmentManager;
-    static String path, data_path, actions_path, wl_path, cap_path, reaver_sess_path, firm_backup_file, manufDBFile, arch, busybox;             //path: App files path (ends with .../files)
+    static String path, data_path, actions_path, wl_path, cap_path, reaver_sess_path, manufDBFile, arch, busybox;             //path: App files path (ends with .../files)
     static File aliases_file;
     static FileWriter aliases_in;
     static final HashMap<String, String> aliases = new HashMap<>();
@@ -406,7 +406,6 @@ public class MainActivity extends AppCompatActivity{
             wl_path = data_path + "/wordlists";
             cap_path = data_path + "/capture_files";
             reaver_sess_path = data_path + "/reaver_sessions";
-            firm_backup_file = data_path + "/fw_bcmdhd.orig.bin";
             manufDBFile = path + "/manuf.db";
             ArrayList<File> dirs = new ArrayList<>();
             dirs.add(new File(data_path));
@@ -1961,7 +1960,6 @@ public class MainActivity extends AppCompatActivity{
             String cmd = "echo pref_file--------------------------------------; cat /data/data/com.hijacker/shared_prefs/com.hijacker_preferences.xml;";
             cmd += " echo aliases file-----------------------------------; " + busybox_tmp + " cat " + Environment.getExternalStorageDirectory() + "/Hijacker/aliases.txt;";
             cmd += " echo app directory----------------------------------; " + busybox_tmp + " ls -lR " + filesDir + ';';
-            cmd += " echo fw_bcmdhd--------------------------------------; strings /vendor/firmware/fw_bcmdhd.bin | grep \"FWID:\";";
             cmd += " echo ps---------------------------------------------; ps | " + busybox_tmp + " grep -e air -e mdk -e reaver;";
             cmd += " echo busybox----------------------------------------; " + busybox_tmp + ";";
             cmd += " echo logcat-----------------------------------------; logcat -d -v time | " + busybox_tmp + " grep HIJACKER;";
@@ -1988,58 +1986,6 @@ public class MainActivity extends AppCompatActivity{
         return true;
     }
 
-    static String findFirmwarePath(Shell shell){
-        //Blocking function, don't run on main thread
-        boolean flag = false;
-        if(shell==null){
-            flag = true;
-            shell = getFreeShell();
-        }
-
-        String[] dirs = {
-                "/system",
-                "/vendor",
-                "/system/etc"
-        };
-        String[] fw_names = {
-                "fw_bcmdhd.bin",
-                "bcmdhd_sta.bin"
-        };
-
-        String firmware = null;
-        int i = 0;
-        while(firmware==null && i<dirs.length){
-
-            for(String fw_name : fw_names){
-                shell.run(busybox + " find " + dirs[i] + " -type f -name \"" + fw_name + "\"; echo ENDOFFIND");
-                BufferedReader out = shell.getShell_out();
-                try{
-                    String result = out.readLine();
-                    while(result!=null){
-                        if(result.equals("ENDOFFIND"))
-                            break;
-                        if(!result.contains("/bac/") && !result.contains("backup"))
-                            firmware = result;
-
-                        result = out.readLine();
-                    }
-                }catch(IOException e){
-                    e.printStackTrace();
-                }
-
-                if(firmware!=null) break;
-            }
-
-            i++;
-        }
-
-        if(flag){
-            //Release the shell only if it was obtained by this function
-            shell.done();
-        }
-
-        return firmware;
-    }
     static boolean isArchValid(){
         return arch.matches("(.*)arm(.*)") || arch.matches("aarch64");
     }
