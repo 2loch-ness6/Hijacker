@@ -60,22 +60,8 @@ public class FirstRunDialog extends DialogFragment {
     @Override
     public void onStart(){
         super.onStart();
-        // Disable "Install Nexmon" button if arch is not valid
-        AlertDialog d = (AlertDialog) getDialog();
-        if(d==null) return;
-
-        Button positiveButton = d.getButton(Dialog.BUTTON_POSITIVE);
-        if(!isArchValid()){
-            positiveButton.setEnabled(false);
-        }else{
-            positiveButton.setOnClickListener(new View.OnClickListener(){
-                @Override
-                public void onClick(View v){
-                    // Open InstallFirmwareDialog to install Nexmon
-                    new InstallFirmwareDialog().show(getFragmentManager(), "InstallFirmwareDialog");
-                }
-            });
-        }
+        // Nexmon installation removed - modern devices should use NetHunter
+        // or device-specific monitor mode solutions
     }
     @Override
     public void onDismiss(DialogInterface dialogInterface){

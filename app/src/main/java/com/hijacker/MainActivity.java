@@ -620,7 +620,6 @@ public class MainActivity extends AppCompatActivity{
                     extract("wesside-ng", tools_location, true);
                     extract("wpaclean", tools_location, true);
                     extract("libfakeioctl.so", lib_location, true);
-                    extract("libnexmon.so", lib_location, true);
 
                     runOne("cd " + path + "/bin; mv mdk3 mdk3bf; cp mdk3bf mdk3dos");
 
@@ -630,22 +629,8 @@ public class MainActivity extends AppCompatActivity{
                     }
                 }
 
-                //Detect device chipset
-                publishProgress(getString(R.string.detecting_device_chipset));
-                Shell shell = getFreeShell();
-
-                String firmwarePath = findFirmwarePath(shell);
-                if(firmwarePath!=null){
-                    //Get chipset from firmware file
-                    shell.run("strings " + firmwarePath + " | " + busybox + " grep \"FWID:\"; echo ENDOFSTRINGS");
-                    devChipset = getLastLine(shell.getShell_out(), "ENDOFSTRINGS");
-                    int index = devChipset.indexOf('-');
-                    if(index != -1){
-                        devChipset = devChipset.substring(0, index);
-                    }
-                }
-                Log.i("HIJACKER/DetectDev", "devChipset is " + devChipset);
-                shell.done();
+                //Chipset detection removed - no longer needed for Nexmon-specific firmware
+                //Modern devices should use NetHunter or built-in monitor mode support
 
                 //Set directories
                 prefix = "";
@@ -927,8 +912,8 @@ public class MainActivity extends AppCompatActivity{
 
             if (iswatch) {
                 pref_edit.putString("prefix", "LD_PRELOAD=/system/lib/libfakeioctl.so");
-                pref_edit.putString("enable_monMode", "nexutil -m2");
-                pref_edit.putString("disable_monMode", "nexutil -m0; nexutil -s263 -l8 -b -v `printf 'mpc\\x00\\x01\\x00\\x00\\x00' | base64 | tr -d '\\n'`");
+                // Monitor mode commands should be configured based on device
+                // For modern devices with NetHunter, use NetHunter's monitor mode scripts
                 pref_edit.putString("deauthWait", "3");
                 pref_edit.putBoolean("enable_on_airodump", true);
                 pref_edit.putBoolean("airOnStartup", true);
@@ -936,13 +921,7 @@ public class MainActivity extends AppCompatActivity{
                 pref_edit.apply();
             }
 
-            //Prepare firmware for WearOS
-            if (iswatch) {
-                publishProgress(getString(R.string.prep_watch));
-                Shell shell = getFreeShell();
-                String cmd = "su -c ifconfig wlan0 up; nexutil -s263 -l8 -b -v `printf 'mpc\\x00\\x00\\x00\\x00\\x00' | base64 | tr -d '\\n'";
-                shell.run(cmd);
-            }
+            //Removed Nexmon-specific WearOS firmware preparation
 
             //Show FirstRunDialog
             if(customDialog!=null){

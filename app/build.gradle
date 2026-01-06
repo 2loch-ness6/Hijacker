@@ -8,6 +8,12 @@ android {
         versionCode 36
         versionName "v1.7"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        
+        // Prioritize arm64-v8a for modern devices
+        ndk {
+            abiFilters 'arm64-v8a', 'armeabi-v7a'
+        }
+        
         externalNativeBuild {
             cmake {
                 cppFlags ""
