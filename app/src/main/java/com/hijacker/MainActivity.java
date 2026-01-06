@@ -158,7 +158,6 @@ public class MainActivity extends AppCompatActivity{
     //App and device info
     static String versionName, deviceModel;
     static int versionCode;
-    static String devChipset = "";
     static ActionBar actionBar;
     static String bootkali_init_bin = "/data/data/com.offsec.nethunter/scripts/bootkali_init";
     //Preferences - Defaults are in strings.xml
@@ -349,7 +348,6 @@ public class MainActivity extends AppCompatActivity{
             deviceModel = Build.MODEL;
             if(!deviceModel.startsWith(Build.MANUFACTURER)) deviceModel = Build.MANUFACTURER + " " + deviceModel;
             deviceModel = deviceModel.replace(" ", "_");
-            //devChipset is set later because busybox needs to be extracted
             arch = System.getProperty("os.arch");
 
             //Find views
