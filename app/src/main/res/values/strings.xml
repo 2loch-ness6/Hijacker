@@ -162,28 +162,8 @@
     <!-- FirstRunDialog -->
     <string name="first_run_title">Welcome</string>
     <string name="first_run">This application is a Graphical User Interface for the wireless auditing tools airodump-ng, aireplay-ng, aircrack-ng, mdk3 and reaver, and requires a Monitor Mode enabled WiFi interface.
-        Only some android devices support this but none of them natively.
-        You need to use a custom firmware or kernel so that your wireless adapter can be used in Monitor Mode with injection. External adapters can also be used.
-        You can configure your interface\'s name in Settings. This app requires root privileges to run the tools.</string>
-    <string name="install_firmware">Install Nexmon</string>
-
-    <!-- InstallFirmwareDialog -->
-    <string name="firmware_location">Firmware Location:</string>
-    <string name="device_chipset">Device Chipset:</string>
-    <string name="util_location_text">Management Utility:</string>
-    <string name="firmware_not_found">Firmware file not found</string>
-    <string name="none_found">None found</string>
-    <string name="backup_exists">A backup already exists</string>
-    <string name="backup_created">Backup created</string>
-    <string name="installed_firm_util">Installed firmware and utility</string>
-    <string name="create_backup">Create Backup</string>
-    <string name="error_extracting_firmware">An error occurred while extracting the firmware</string>
-    <string name="error_extracting_utility">An error occurred while extracting nexutil</string>
-    <string name="error_reading_mounts">Can\'t read /proc/mounts to determine system mounting point</string>
-    <string name="error_remounting_system">Can\'t remount / or /system as read-write</string>
-    <string name="field_required">This field is required</string>
-    <string name="restore">Restore</string>
-    <string name="restored">Backup restored</string>
+        For best results, use Kali NetHunter which provides enhanced wireless driver support for modern Qualcomm chipsets. External USB adapters with monitor mode support can also be used with an OTG cable.
+        You can configure your interface\'s name and monitor mode commands in Settings. This app requires root privileges to run the tools.</string>
 
     <!-- IsolatedFragment (xml) -->
     <string name="crack">Crack</string>
@@ -242,7 +222,6 @@
     <string name="checking_su">Checking su…</string>
     <string name="requesting_root_access">Requesting root access…</string>
     <string name="starting_hijacker">Starting Hijacker…</string>
-    <string name="prep_watch">Preparing firmware…</string>
 
     <!-- MDKFragment -->
     <string name="bf_title">Beacon Flooding</string>
@@ -404,8 +383,6 @@
 
     <!-- Tools -->
     <string name="tools">Tools</string>
-    <string name="install_nexmon_title">Install Nexmon</string>
-    <string name="install_nexmon_sum">Install the Nexmon driver and its management utility</string>
 
     <string name="test_title">Test tools</string>
     <string name="test_sum">Run all the tools to make sure that the settings are correct. Any running tasks will be stopped.</string>

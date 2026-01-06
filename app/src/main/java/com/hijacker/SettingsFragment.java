@@ -48,10 +48,7 @@ public class SettingsFragment extends PreferenceFragment {
         addPreferencesFromResource(R.xml.preferences);
 
         if(!isArchValid()){
-            Preference pref = findPreference("install_nexmon");
-            pref.setSummary(getString(R.string.incorrect_arch) + ' ' + arch);
-            pref.setEnabled(false);
-
+            // Prefix can be enabled for non-ARM architectures if tools are manually installed
             findPreference("prefix").setEnabled(true);
         }
         if(allow_prefix) findPreference("prefix").setEnabled(true);
@@ -107,13 +104,7 @@ public class SettingsFragment extends PreferenceFragment {
                 return false;
             }
         });
-        findPreference("install_nexmon").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                new InstallFirmwareDialog().show(mFragmentManager, "InstallFirmwareDialog");
-                return false;
-            }
-        });
+        // Nexmon installation option removed - use NetHunter or device-specific solutions
         findPreference("send_feedback").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
             @Override
             public boolean onPreferenceClick(Preference preference){

@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity{
     static NotificationCompat.Builder notif, error_notif, handshake_notif;
     static NotificationManager mNotificationManager;
     static FragmentManager mFragmentManager;
-    static String path, data_path, actions_path, wl_path, cap_path, reaver_sess_path, firm_backup_file, manufDBFile, arch, busybox;             //path: App files path (ends with .../files)
+    static String path, data_path, actions_path, wl_path, cap_path, reaver_sess_path, manufDBFile, arch, busybox;             //path: App files path (ends with .../files)
     static File aliases_file;
     static FileWriter aliases_in;
     static final HashMap<String, String> aliases = new HashMap<>();
@@ -158,7 +158,6 @@ public class MainActivity extends AppCompatActivity{
     //App and device info
     static String versionName, deviceModel;
     static int versionCode;
-    static String devChipset = "";
     static ActionBar actionBar;
     static String bootkali_init_bin = "/data/data/com.offsec.nethunter/scripts/bootkali_init";
     //Preferences - Defaults are in strings.xml
@@ -349,7 +348,6 @@ public class MainActivity extends AppCompatActivity{
             deviceModel = Build.MODEL;
             if(!deviceModel.startsWith(Build.MANUFACTURER)) deviceModel = Build.MANUFACTURER + " " + deviceModel;
             deviceModel = deviceModel.replace(" ", "_");
-            //devChipset is set later because busybox needs to be extracted
             arch = System.getProperty("os.arch");
 
             //Find views
@@ -406,7 +404,6 @@ public class MainActivity extends AppCompatActivity{
             wl_path = data_path + "/wordlists";
             cap_path = data_path + "/capture_files";
             reaver_sess_path = data_path + "/reaver_sessions";
-            firm_backup_file = data_path + "/fw_bcmdhd.orig.bin";
             manufDBFile = path + "/manuf.db";
             ArrayList<File> dirs = new ArrayList<>();
             dirs.add(new File(data_path));
@@ -620,7 +617,6 @@ public class MainActivity extends AppCompatActivity{
                     extract("wesside-ng", tools_location, true);
                     extract("wpaclean", tools_location, true);
                     extract("libfakeioctl.so", lib_location, true);
-                    extract("libnexmon.so", lib_location, true);
 
                     runOne("cd " + path + "/bin; mv mdk3 mdk3bf; cp mdk3bf mdk3dos");
 
@@ -630,22 +626,8 @@ public class MainActivity extends AppCompatActivity{
                     }
                 }
 
-                //Detect device chipset
-                publishProgress(getString(R.string.detecting_device_chipset));
-                Shell shell = getFreeShell();
-
-                String firmwarePath = findFirmwarePath(shell);
-                if(firmwarePath!=null){
-                    //Get chipset from firmware file
-                    shell.run("strings " + firmwarePath + " | " + busybox + " grep \"FWID:\"; echo ENDOFSTRINGS");
-                    devChipset = getLastLine(shell.getShell_out(), "ENDOFSTRINGS");
-                    int index = devChipset.indexOf('-');
-                    if(index != -1){
-                        devChipset = devChipset.substring(0, index);
-                    }
-                }
-                Log.i("HIJACKER/DetectDev", "devChipset is " + devChipset);
-                shell.done();
+                //Chipset detection removed - no longer needed for Nexmon-specific firmware
+                //Modern devices should use NetHunter or built-in monitor mode support
 
                 //Set directories
                 prefix = "";
@@ -927,8 +909,8 @@ public class MainActivity extends AppCompatActivity{
 
             if (iswatch) {
                 pref_edit.putString("prefix", "LD_PRELOAD=/system/lib/libfakeioctl.so");
-                pref_edit.putString("enable_monMode", "nexutil -m2");
-                pref_edit.putString("disable_monMode", "nexutil -m0; nexutil -s263 -l8 -b -v `printf 'mpc\\x00\\x01\\x00\\x00\\x00' | base64 | tr -d '\\n'`");
+                // Monitor mode commands should be configured based on device
+                // For modern devices with NetHunter, use NetHunter's monitor mode scripts
                 pref_edit.putString("deauthWait", "3");
                 pref_edit.putBoolean("enable_on_airodump", true);
                 pref_edit.putBoolean("airOnStartup", true);
@@ -936,13 +918,7 @@ public class MainActivity extends AppCompatActivity{
                 pref_edit.apply();
             }
 
-            //Prepare firmware for WearOS
-            if (iswatch) {
-                publishProgress(getString(R.string.prep_watch));
-                Shell shell = getFreeShell();
-                String cmd = "su -c ifconfig wlan0 up; nexutil -s263 -l8 -b -v `printf 'mpc\\x00\\x00\\x00\\x00\\x00' | base64 | tr -d '\\n'";
-                shell.run(cmd);
-            }
+            //Removed Nexmon-specific WearOS firmware preparation
 
             //Show FirstRunDialog
             if(customDialog!=null){
@@ -1982,7 +1958,6 @@ public class MainActivity extends AppCompatActivity{
             String cmd = "echo pref_file--------------------------------------; cat /data/data/com.hijacker/shared_prefs/com.hijacker_preferences.xml;";
             cmd += " echo aliases file-----------------------------------; " + busybox_tmp + " cat " + Environment.getExternalStorageDirectory() + "/Hijacker/aliases.txt;";
             cmd += " echo app directory----------------------------------; " + busybox_tmp + " ls -lR " + filesDir + ';';
-            cmd += " echo fw_bcmdhd--------------------------------------; strings /vendor/firmware/fw_bcmdhd.bin | grep \"FWID:\";";
             cmd += " echo ps---------------------------------------------; ps | " + busybox_tmp + " grep -e air -e mdk -e reaver;";
             cmd += " echo busybox----------------------------------------; " + busybox_tmp + ";";
             cmd += " echo logcat-----------------------------------------; logcat -d -v time | " + busybox_tmp + " grep HIJACKER;";
@@ -2009,58 +1984,6 @@ public class MainActivity extends AppCompatActivity{
         return true;
     }
 
-    static String findFirmwarePath(Shell shell){
-        //Blocking function, don't run on main thread
-        boolean flag = false;
-        if(shell==null){
-            flag = true;
-            shell = getFreeShell();
-        }
-
-        String[] dirs = {
-                "/system",
-                "/vendor",
-                "/system/etc"
-        };
-        String[] fw_names = {
-                "fw_bcmdhd.bin",
-                "bcmdhd_sta.bin"
-        };
-
-        String firmware = null;
-        int i = 0;
-        while(firmware==null && i<dirs.length){
-
-            for(String fw_name : fw_names){
-                shell.run(busybox + " find " + dirs[i] + " -type f -name \"" + fw_name + "\"; echo ENDOFFIND");
-                BufferedReader out = shell.getShell_out();
-                try{
-                    String result = out.readLine();
-                    while(result!=null){
-                        if(result.equals("ENDOFFIND"))
-                            break;
-                        if(!result.contains("/bac/") && !result.contains("backup"))
-                            firmware = result;
-
-                        result = out.readLine();
-                    }
-                }catch(IOException e){
-                    e.printStackTrace();
-                }
-
-                if(firmware!=null) break;
-            }
-
-            i++;
-        }
-
-        if(flag){
-            //Release the shell only if it was obtained by this function
-            shell.done();
-        }
-
-        return firmware;
-    }
     static boolean isArchValid(){
         return arch.matches("(.*)arm(.*)") || arch.matches("aarch64");
     }
