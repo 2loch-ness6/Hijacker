@@ -64,8 +64,8 @@ jobs:
         if [ -f "${{steps.sign_app.outputs.signedReleaseFile}}" ]; then
           cp "${{steps.sign_app.outputs.signedReleaseFile}}" "release-apks/Hijacker-${VERSION}-release-signed.apk"
         fi
-        cp app/build/outputs/apk/release/*.apk "release-apks/Hijacker-${VERSION}-release-unsigned.apk" 2>/dev/null || true
-        cp app/build/outputs/apk/debug/*.apk "release-apks/Hijacker-${VERSION}-debug.apk"
+        cp app/build/outputs/apk/release/app-release-unsigned.apk "release-apks/Hijacker-${VERSION}-release-unsigned.apk" 2>/dev/null || true
+        cp app/build/outputs/apk/debug/app-debug.apk "release-apks/Hijacker-${VERSION}-debug.apk"
         
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v1
