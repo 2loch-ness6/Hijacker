@@ -14,7 +14,8 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public abstract class ModernAsyncTask<Params, Progress, Result> {
-    private static final Executor THREAD_POOL_EXECUTOR = Executors.newCachedThreadPool();
+    private static final Executor THREAD_POOL_EXECUTOR =
+            Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
     private final Handler handler = new Handler(Looper.getMainLooper());
     private volatile boolean cancelled = false;
 
