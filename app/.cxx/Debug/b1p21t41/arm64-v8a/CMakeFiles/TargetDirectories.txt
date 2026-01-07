@@ -1,3 +1,0 @@
-/home/runner/work/Hijacker/Hijacker/app/.cxx/Debug/b1p21t41/arm64-v8a/CMakeFiles/native-lib.dir
-/home/runner/work/Hijacker/Hijacker/app/.cxx/Debug/b1p21t41/arm64-v8a/CMakeFiles/edit_cache.dir
-/home/runner/work/Hijacker/Hijacker/app/.cxx/Debug/b1p21t41/arm64-v8a/CMakeFiles/rebuild_cache.dir
