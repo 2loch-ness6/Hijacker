@@ -363,17 +363,17 @@ public class CrackFragment extends Fragment{
             }
         }
 
-        switch(securityRG.getCheckedRadioButtonId()){
-            case -1:
-                //Mode not selected
-                Snackbar.make(fragmentView, getString(R.string.select_wpa_wep), Snackbar.LENGTH_SHORT).show();
+        int securityChecked = securityRG.getCheckedRadioButtonId();
+        if(securityChecked == -1) {
+            //Mode not selected
+            Snackbar.make(fragmentView, getString(R.string.select_wpa_wep), Snackbar.LENGTH_SHORT).show();
+            return;
+        } else if(securityChecked == R.id.wep_rb) {
+            if(wepRG.getCheckedRadioButtonId()==-1){
+                //WEP is selected but we need to have a wep bit length selection
+                Snackbar.make(fragmentView, getString(R.string.select_wep_bits), Snackbar.LENGTH_SHORT).show();
                 return;
-            case R.id.wep_rb:
-                if(wepRG.getCheckedRadioButtonId()==-1){
-                    //WEP is selected but we need to have a wep bit length selection
-                    Snackbar.make(fragmentView, getString(R.string.select_wep_bits), Snackbar.LENGTH_SHORT).show();
-                    return;
-                }
+            }
         }
 
         task = new CrackTask(CrackTask.JOB_CRACK, capfile, wordlist);
@@ -406,52 +406,40 @@ public class CrackFragment extends Fragment{
             publishProgress("\nRunning...");
             consoleScrollView.fullScroll(View.FOCUS_DOWN);
 
-            switch(job){
-                case JOB_CRACK:
-                    switch(securityRG.getCheckedRadioButtonId()){
-                        case R.id.wpa_rb:
-                            //WPA
-                            mode = WPA;
-                            break;
-                        case R.id.wep_rb:
-                            //WEP
-                            mode = WEP;
-                            break;
+            if(job == JOB_CRACK) {
+                int securityId = securityRG.getCheckedRadioButtonId();
+                if(securityId == R.id.wpa_rb) {
+                    //WPA
+                    mode = WPA;
+                } else if(securityId == R.id.wep_rb) {
+                    //WEP
+                    mode = WEP;
+                }
+                //Create command
+                cmd = "su -c " + aircrack_dir + " " + capfile + " -l " + path + "/aircrack-out.txt -a " + mode;
+                if(wordlist!=null)
+                    cmd += " -w " + wordlist;
+                if(mode==WEP){
+                    cmd += " -n ";
+                    int wepId = wepRG.getCheckedRadioButtonId();
+                    if(wepId == R.id.wep_64) {
+                        cmd += "64";
+                    } else if(wepId == R.id.wep_128) {
+                        cmd += "128";
+                    } else if(wepId == R.id.wep_152) {
+                        cmd += "152";
+                    } else if(wepId == R.id.wep_256) {
+                        cmd += "256";
+                    } else if(wepId == R.id.wep_512) {
+                        cmd += "512";
                     }
-                    //Create command
-                    cmd = "su -c " + aircrack_dir + " " + capfile + " -l " + path + "/aircrack-out.txt -a " + mode;
-                    if(wordlist!=null)
-                        cmd += " -w " + wordlist;
-                    if(mode==WEP){
-                        cmd += " -n ";
-                        switch(wepRG.getCheckedRadioButtonId()){
-                            case R.id.wep_64:
-                                cmd += "64";
-                                break;
-                            case R.id.wep_128:
-                                cmd += "128";
-                                break;
-                            case R.id.wep_152:
-                                cmd += "152";
-                                break;
-                            case R.id.wep_256:
-                                cmd += "256";
-                                break;
-                            case R.id.wep_512:
-                                cmd += "512";
-                                break;
-                        }
-                    }
-                    break;
-
-                case JOB_TEST:
-                    cmd = "su -c " + aircrack_dir + " -S";
-                    break;
-
-                default:
-                    Log.e("HIJACKER/CrackTask", "Unknown Job");
-                    this.cancel(true);
-                    return;
+                }
+            } else if(job == JOB_TEST) {
+                cmd = "su -c " + aircrack_dir + " -S";
+            } else {
+                Log.e("HIJACKER/CrackTask", "Unknown Job");
+                this.cancel(true);
+                return;
             }
             if(debug) Log.d("HIJACKER/CrackTask", cmd);
 

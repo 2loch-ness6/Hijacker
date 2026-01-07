@@ -264,25 +264,19 @@ public class MainActivity extends AppCompatActivity{
 
                             if(currentFragment!=menuItem.getItemId()){
                                 FragmentTransaction ft = mFragmentManager.beginTransaction();
-                                switch(menuItem.getItemId()){
-                                    case FRAGMENT_AIRODUMP:
-                                        ft.replace(R.id.fragment1, is_ap==null ? new MyListFragment() : new IsolatedFragment());
-                                        break;
-                                    case FRAGMENT_MDK:
-                                        ft.replace(R.id.fragment1, new MDKFragment());
-                                        break;
-                                    case FRAGMENT_REAVER:
-                                        ft.replace(R.id.fragment1, reaverFragment);
-                                        break;
-                                    case FRAGMENT_CRACK:
-                                        ft.replace(R.id.fragment1, crackFragment);
-                                        break;
-                                    case FRAGMENT_CUSTOM:
-                                        ft.replace(R.id.fragment1, customActionFragment);
-                                        break;
-                                    case FRAGMENT_SETTINGS:
-                                        ft.replace(R.id.fragment1, new SettingsFragment());
-                                        break;
+                                int itemId = menuItem.getItemId();
+                                if(itemId == FRAGMENT_AIRODUMP) {
+                                    ft.replace(R.id.fragment1, is_ap==null ? new MyListFragment() : new IsolatedFragment());
+                                } else if(itemId == FRAGMENT_MDK) {
+                                    ft.replace(R.id.fragment1, new MDKFragment());
+                                } else if(itemId == FRAGMENT_REAVER) {
+                                    ft.replace(R.id.fragment1, reaverFragment);
+                                } else if(itemId == FRAGMENT_CRACK) {
+                                    ft.replace(R.id.fragment1, crackFragment);
+                                } else if(itemId == FRAGMENT_CUSTOM) {
+                                    ft.replace(R.id.fragment1, customActionFragment);
+                                } else if(itemId == FRAGMENT_SETTINGS) {
+                                    ft.replace(R.id.fragment1, new SettingsFragment());
                                 }
                                 ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                                 ft.addToBackStack(null);
@@ -1309,80 +1303,73 @@ public class MainActivity extends AppCompatActivity{
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
-        switch(item.getItemId()){
-            case android.R.id.home:
-                mDrawerLayout.openDrawer(GravityCompat.START);
-                return true;
-
-            case R.id.reset:
-                stop(PROCESS_AIRODUMP);
-                Tile.clear();
-                Tile.onCountsChanged();
-                Airodump.startClean();
-                return true;
-
-            case R.id.stop_run:
-                if(Airodump.isRunning()) stop(PROCESS_AIRODUMP);
-                else Airodump.start();
-                return true;
-
-            case R.id.stop_aireplay:
-                stop(PROCESS_AIREPLAY);
-                return true;
-
-            case R.id.filter:
-                new FiltersDialog().show(mFragmentManager, "FiltersDialog");
-                return true;
-
-            case R.id.back:
-                mFragmentManager.popBackStackImmediate();
-                menu.getItem(0).setVisible(false);
-                return true;
-
-            case R.id.settings:
-                if(currentFragment!=FRAGMENT_SETTINGS){
-                    FragmentTransaction ft = mFragmentManager.beginTransaction();
-                    ft.replace(R.id.fragment1, new SettingsFragment());
-                    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                    ft.addToBackStack(null);
-                    ft.commitAllowingStateLoss();
-                }
-                return true;
-
-            case R.id.export:
-                new ExportDialog().show(mFragmentManager, "ExportDialog");
-                return true;
-
-            case R.id.copy_airodump:
-                if(last_airodump==null){
-                    Toast.makeText(this, getString(R.string.no_last_command_available), Toast.LENGTH_SHORT).show();
-                }else{
-                    copy(last_airodump, rootView);
-                }
-
-            case R.id.copy_aireplay:
-                if(last_aireplay==null){
-                    Toast.makeText(this, getString(R.string.no_last_command_available), Toast.LENGTH_SHORT).show();
-                }else{
-                    copy(last_aireplay, rootView);
-                }
-
-            case R.id.copy_mdk:
-                if(last_mdk==null){
-                    Toast.makeText(this, getString(R.string.no_last_command_available), Toast.LENGTH_SHORT).show();
-                }else{
-                    copy(last_mdk, rootView);
-                }
-
-            case R.id.copy_reaver:
-                if(last_reaver==null){
-                    Toast.makeText(this, getString(R.string.no_last_command_available), Toast.LENGTH_SHORT).show();
-                }else{
-                    copy(last_reaver, rootView);
-                }
-
-            default:
-                return super.onOptionsItemSelected(item);
+        int itemId = item.getItemId();
+        
+        if(itemId == android.R.id.home) {
+            mDrawerLayout.openDrawer(GravityCompat.START);
+            return true;
+        } else if(itemId == R.id.reset) {
+            stop(PROCESS_AIRODUMP);
+            Tile.clear();
+            Tile.onCountsChanged();
+            Airodump.startClean();
+            return true;
+        } else if(itemId == R.id.stop_run) {
+            if(Airodump.isRunning()) stop(PROCESS_AIRODUMP);
+            else Airodump.start();
+            return true;
+        } else if(itemId == R.id.stop_aireplay) {
+            stop(PROCESS_AIREPLAY);
+            return true;
+        } else if(itemId == R.id.filter) {
+            new FiltersDialog().show(mFragmentManager, "FiltersDialog");
+            return true;
+        } else if(itemId == R.id.back) {
+            mFragmentManager.popBackStackImmediate();
+            menu.getItem(0).setVisible(false);
+            return true;
+        } else if(itemId == R.id.settings) {
+            if(currentFragment!=FRAGMENT_SETTINGS){
+                FragmentTransaction ft = mFragmentManager.beginTransaction();
+                ft.replace(R.id.fragment1, new SettingsFragment());
+                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                ft.addToBackStack(null);
+                ft.commitAllowingStateLoss();
+            }
+            return true;
+        } else if(itemId == R.id.export) {
+            new ExportDialog().show(mFragmentManager, "ExportDialog");
+            return true;
+        } else if(itemId == R.id.copy_airodump) {
+            if(last_airodump==null){
+                Toast.makeText(this, getString(R.string.no_last_command_available), Toast.LENGTH_SHORT).show();
+            }else{
+                copy(last_airodump, rootView);
+            }
+            return true;
+        } else if(itemId == R.id.copy_aireplay) {
+            if(last_aireplay==null){
+                Toast.makeText(this, getString(R.string.no_last_command_available), Toast.LENGTH_SHORT).show();
+            }else{
+                copy(last_aireplay, rootView);
+            }
+            return true;
+        } else if(itemId == R.id.copy_mdk) {
+            if(last_mdk==null){
+                Toast.makeText(this, getString(R.string.no_last_command_available), Toast.LENGTH_SHORT).show();
+            }else{
+                copy(last_mdk, rootView);
+            }
+            return true;
+        } else if(itemId == R.id.copy_reaver) {
+            if(last_reaver==null){
+                Toast.makeText(this, getString(R.string.no_last_command_available), Toast.LENGTH_SHORT).show();
+            }else{
+                copy(last_reaver, rootView);
+            }
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
         }
     }
     @Override

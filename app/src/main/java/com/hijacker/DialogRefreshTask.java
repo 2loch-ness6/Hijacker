@@ -1,10 +1,9 @@
 package com.hijacker;
 
 import android.annotation.SuppressLint;
-import android.os.AsyncTask;
 import androidx.annotation.NonNull;
 
-class DialogRefreshTask extends AsyncTask<Void, Void, Boolean>{
+class DialogRefreshTask extends ModernAsyncTask<Void, Void, Boolean>{
     @SuppressLint("StaticFieldLeak")        // This object will exist as long as the device dialog exists
     DeviceDialog deviceDialog;
     DialogRefreshTask(@NonNull DeviceDialog deviceDialog){

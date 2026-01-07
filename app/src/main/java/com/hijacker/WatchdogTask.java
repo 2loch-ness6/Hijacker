@@ -18,7 +18,6 @@ package com.hijacker;
  */
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.util.Log;
 
 import java.util.List;
@@ -39,7 +38,7 @@ import static com.hijacker.MainActivity.mFragmentManager;
 import static com.hijacker.MainActivity.mNotificationManager;
 import static com.hijacker.MainActivity.stop;
 
-class WatchdogTask extends AsyncTask<Void, String, Boolean>{
+class WatchdogTask extends ModernAsyncTask<Void, String, Boolean>{
     static final int SLEEP_TIME = 5000, PAUSE_TIME = 1000;
     Context con;
     WatchdogTask(Context context){
@@ -105,6 +104,6 @@ class WatchdogTask extends AsyncTask<Void, String, Boolean>{
         }
     }
     boolean isRunning(){
-        return getStatus()==Status.RUNNING;
+        return !isCancelled();
     }
 }
