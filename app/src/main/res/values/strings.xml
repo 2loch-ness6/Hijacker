@@ -416,4 +416,5 @@
     <string name="already_on_latest">You are running the latest version</string>
     <string name="github_title">Go to GitHub</string>
     <string name="version_title">Version</string>
+    <string name="field_required">This field is required</string>
 </resources>

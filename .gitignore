@@ -8,3 +8,11 @@
 /captures
 .externalNativeBuild
 *.args
+.cxx
+*.apk
+*.ap_
+*.dex
+*.class
+bin/
+gen/
+out/

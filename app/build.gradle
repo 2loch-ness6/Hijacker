@@ -1,53 +1,85 @@
 apply plugin: 'com.android.application'
+
 android {
-    compileSdkVersion 29
+    namespace 'com.hijacker'
+    compileSdk 34
+    
     defaultConfig {
         applicationId "com.hijacker"
-        minSdkVersion 21
-        targetSdkVersion 29
-        versionCode 36
-        versionName "v1.7"
+        minSdkVersion 26
+        targetSdkVersion 34
+        versionCode 37
+        versionName "v2.0-android14"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         
-        // Prioritize arm64-v8a for modern devices
+        // Prioritize arm64-v8a for modern devices (2023-24 flagships)
         ndk {
-            abiFilters 'arm64-v8a', 'armeabi-v7a'
+            abiFilters 'arm64-v8a'
         }
         
         externalNativeBuild {
             cmake {
                 cppFlags ""
+                arguments "-DANDROID_STL=c++_shared"
             }
         }
     }
+    
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    
+    buildFeatures {
+        buildConfig true
+    }
+    
     externalNativeBuild {
         cmake {
             path "CMakeLists.txt"
         }
     }
-    ndkVersion = '21.0.6113669'
+    
+    ndkVersion = '26.1.10909125'
+    
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
 }
+
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0', {
+    
+    // Testing
+    androidTestImplementation('androidx.test.espresso:espresso-core:3.5.1', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'com.google.android.material:material:1.1.0'
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13.2'
+    
+    // AndroidX Core Libraries
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.core:core:1.12.0'
+    implementation 'androidx.fragment:fragment:1.6.2'
+    implementation 'androidx.lifecycle:lifecycle-runtime:2.7.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.7.0'
+    
+    // Material Design Components for Android 14
+    implementation 'com.google.android.material:material:1.11.0'
+    
+    // AndroidX Preferences
+    implementation 'androidx.preference:preference:1.2.1'
+    
+    // CardView
     implementation 'androidx.cardview:cardview:1.0.0'
-
-    implementation 'com.google.android.material:material:1.1.0'
+    
+    // Legacy Support (for gradual migration)
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 }
 
 repositories {
-    /libs/
     google()
+    mavenCentral()
 }
